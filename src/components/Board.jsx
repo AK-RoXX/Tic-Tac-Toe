@@ -1,50 +1,49 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect } from 'react';
 import Square from './Square';
 import { checkWinner, getBestMove } from '../logic/gameLogic';
 
-export default function Board({ board, setBoard, isXNext, setIsXNext, gameMode }) {
+export default function Board({ board, setBoard, isXNext, setIsXNext, gameMode, names }) {
   const winner = checkWinner(board);
-  const status = winner 
-    ? winner === 'Draw' ? "It's a Draw!" : `Winner: ${winner}`
-    : `Next Player: ${isXNext ? 'X' : 'O'}`;
+  
+  const currentPlayer = isXNext ? names.p1 : names.p2;
 
-  const handleSquareClick = useCallback((i) => {
-    if (board[i] || winner) return;
-
-    const newBoard = [...board];
-    newBoard[i] = isXNext ? 'X' : 'O';
-    setBoard(newBoard);
-    setIsXNext(!isXNext);
-  }, [board, winner, isXNext, setBoard, setIsXNext]);
-
-  // Handle Computer Move
   useEffect(() => {
-    // Only move if it's Computer mode, it's O's turn (false), and no winner yet
     if (gameMode === 'computer' && !isXNext && !winner) {
       const timer = setTimeout(() => {
-        const bestMove = getBestMove([...board]);
-        if (bestMove !== undefined) {
-          handleSquareClick(bestMove);
-        }
-      }, 600); // 600ms delay makes it feel like the computer is "thinking"
+        const move = getBestMove([...board]);
+        if (move !== undefined) handleSquareClick(move);
+      }, 600);
       return () => clearTimeout(timer);
     }
-  }, [isXNext, gameMode, winner, board, handleSquareClick]);
- 
+  }, [isXNext, winner]);
+
+  const handleSquareClick = (i) => {
+    if (board[i] || winner) return;
+    const nextBoard = [...board];
+    nextBoard[i] = isXNext ? 'X' : 'O';
+    setBoard(nextBoard);
+    setIsXNext(!isXNext);
+  };
 
   return (
     <div className="flex flex-col items-center gap-6">
-      <div className={`text-2xl font-bold ${winner ? 'text-yellow-400 animate-bounce' : 'text-slate-300'}`}>
-        {status}
+      <div className="text-center">
+        {winner ? (
+          <div className="text-2xl font-bold text-yellow-400 animate-pulse">
+            {winner === 'Draw' ? "It's a Tie!" : `${winner === 'X' ? names.p1 : names.p2} Wins!`}
+          </div>
+        ) : (
+          <div className="text-lg text-slate-300">
+            <span className={isXNext ? 'text-cyan-400 font-bold' : 'text-pink-500 font-bold'}>
+              {currentPlayer}'s
+            </span> Turn
+          </div>
+        )}
       </div>
 
-      <div className="grid grid-cols-3 gap-3 bg-slate-700 p-3 rounded-xl shadow-2xl">
-        {board.map((value, i) => (
-          <Square 
-            key={i} 
-            value={value} 
-            onClick={() => handleSquareClick(i)} 
-          />
+      <div className="grid grid-cols-3 gap-2 bg-slate-700/50 p-2 rounded-xl border border-slate-600 shadow-inner">
+        {board.map((val, i) => (
+          <Square key={i} value={val} onClick={() => handleSquareClick(i)} />
         ))}
       </div>
     </div>
