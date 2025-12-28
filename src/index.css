@@ -1,12 +1,9 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-/* Adding a global style to ensure the height and background are forced */
+/* Keep your custom background logic below */
 html, body, #root {
   height: 100%;
   margin: 0;
-  padding: 0;
-  background-color: #0f172a; /* This is slate-900 */
+  background-color: #0f172a;
   color: white;
 }
