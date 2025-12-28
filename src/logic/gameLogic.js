@@ -12,3 +12,52 @@ export function checkWinner(squares) {
   }
   return squares.includes(null) ? null : "Draw";
 }
+
+export function getBestMove(board) {
+  let bestScore = -Infinity;
+  let move;
+
+  for (let i = 0; i < 9; i++) {
+    if (board[i] === null) {
+      board[i] = "O"; // Computer is O
+      let score = minimax(board, 0, false);
+      board[i] = null;
+      if (score > bestScore) {
+        bestScore = score;
+        move = i;
+      }
+    }
+  }
+  return move;
+}
+
+const scores = { X: -10, O: 10, Draw: 0 };
+
+function minimax(board, depth, isMaximizing) {
+  const result = checkWinner(board);
+  if (result !== null) return scores[result];
+
+  if (isMaximizing) {
+    let bestScore = -Infinity;
+    for (let i = 0; i < 9; i++) {
+      if (board[i] === null) {
+        board[i] = "O";
+        let score = minimax(board, depth + 1, false);
+        board[i] = null;
+        bestScore = Math.max(score, bestScore);
+      }
+    }
+    return bestScore;
+  } else {
+    let bestScore = Infinity;
+    for (let i = 0; i < 9; i++) {
+      if (board[i] === null) {
+        board[i] = "X";
+        let score = minimax(board, depth + 1, true);
+        board[i] = null;
+        bestScore = Math.min(score, bestScore);
+      }
+    }
+    return bestScore;
+  }
+}
