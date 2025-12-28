@@ -1,9 +1,11 @@
 @import "tailwindcss";
 
-/* Keep your custom background logic below */
 html, body, #root {
   height: 100%;
   margin: 0;
   background-color: #0f172a;
   color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
